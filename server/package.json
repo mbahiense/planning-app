@@ -1,0 +1,32 @@
+{
+  "name": "planning",
+  "version": "1.0.0",
+  "description": "Planning tasks with websocket",
+  "main": "task-server.js",
+  "scripts": {
+    "start": "node task-server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/mbahiense/planning.git"
+  },
+  "keywords": [
+    "planning",
+    "websocket",
+    "tasks",
+    "managenment",
+    "node",
+    "app"
+  ],
+  "author": "Marcos Bahiense",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mbahiense/planning/issues"
+  },
+  "homepage": "https://github.com/mbahiense/planning#readme",
+  "dependencies": {
+    "jsonfile": "^5.0.0",
+    "socket.io": "^2.2.0"
+  }
+}
