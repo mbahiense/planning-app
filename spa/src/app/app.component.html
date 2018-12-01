@@ -3,12 +3,59 @@
     Planning Tasks
   </h1>
 </div>
-<ul>
-  <li *ngFor="let task of tasks; let i = index" (click)="changeStatus(i)" [class.done]="task.status==='done'">
-      <label class="module">{{task.module}}</label>
-      <label class="label">{{task.label}}</label>
-      <label class="status">{{task.status}}</label>
-  </li>
-</ul>
+<app-active-users></app-active-users>
+<div class="planning">
+<div class="task-container">
+  <h2>Todo</h2>
+  <div
+    id="todo"
+    cdkDropList
+    #todoList="cdkDropList"
+    [cdkDropListData]="todo"
+    [cdkDropListConnectedTo]="[doneList, doingList]"
+    class="task-list"
+    (cdkDropListDropped)="drop($event)">
+    <div class="task-box" *ngFor="let item of todo" cdkDrag>
+        <div class="task-custom-placeholder" *cdkDragPlaceholder></div>
+        {{item.label}}
+      </div>
+  </div>
+</div>
+
+<div class="task-container">
+    <h2>Doing</h2>
+    <div
+      id="doing"
+      cdkDropList
+      #doingList="cdkDropList"
+      [cdkDropListData]="doing"
+      [cdkDropListConnectedTo]="[todoList, doneList]"
+      class="task-list"
+      (cdkDropListDropped)="drop($event)">
+      <div class="task-box" *ngFor="let item of doing" cdkDrag>
+          <div class="task-custom-placeholder" *cdkDragPlaceholder></div>
+        {{item.label}}
+      </div>
+    </div>
+  </div>
+
+<div class="task-container">
+  <h2>Done</h2>
+
+  <div
+    id="done"
+    cdkDropList
+    #doneList="cdkDropList"
+    [cdkDropListData]="done"
+    [cdkDropListConnectedTo]="[todoList, doingList]"
+    class="task-list"
+    (cdkDropListDropped)="drop($event)">
+    <div class="task-box" *ngFor="let item of done" cdkDrag>
+        <div class="task-custom-placeholder" *cdkDragPlaceholder></div>
+      {{item.label}}
+    </div>
+  </div>
+</div>
+</div>
 
 <label>Total to finish: {{getPendentTasks()}}</label>

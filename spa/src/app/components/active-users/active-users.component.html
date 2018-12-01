@@ -1,0 +1,12 @@
+<div class="cards">
+  <div *ngFor="let user of users" (click)="hideInput = !hideInput">
+    <img src={{user.avatar}} class="avatar card-image">
+  </div>
+
+  <div *ngIf="hideInput" class="form-name">
+      <mat-form-field>
+        <input matInput placeholder="My name" [(ngModel)]="username">
+      </mat-form-field>
+      <button mat-raised-button color='primary' (click)="updateName()">Update</button>
+    </div>
+</div>

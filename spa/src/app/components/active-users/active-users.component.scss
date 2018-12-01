@@ -1,0 +1,31 @@
+$def-pad: 16px;
+
+.cards {
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: row;
+}
+.avatar {
+  height: 40px;
+  width: 40px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  object-fit: cover;
+}
+
+.card-image {
+  padding-right: 5px;
+  background-size: cover;
+}
+
+.input-name {
+  min-width: 100px;
+  max-width: 150px;
+  width: 100%;
+}
+.form-name {
+  margin-left: $def-pad;
+  button {
+    margin-left: $def-pad/2;
+  }
+}
