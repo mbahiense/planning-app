@@ -1,7 +1,16 @@
 # Planning-app
 
-Simple project to manage activities collaboratively.
-For those moments, you need the simple no frills and without external dependencies.
+Simple kaban project to managenment task in Todo, Doing, Done.
+
+### Stack
+ * Angular 6
+ * Angular Material
+ * Websocket
+
+### Features
+ * Handler tasks in kanban board in real time
+ * Visible actives users
+ * Assing tasks
 
 ## Frontend start
 Run `ng serve --host 0.0.0.0` for a dev server. Navigate to `http://localhost:4200`. The app will automatically reload if you change any of the source files.
