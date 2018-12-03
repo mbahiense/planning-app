@@ -1,78 +1,84 @@
 const server = require('http').createServer();
 const io = require('socket.io')(server, { origins: (orig, call) => call(null, true) });
-const jsonfile = require('jsonfile');
+const uuid = require('uuid/v1');
+var JsonDB = require('node-json-db');
+var db = new JsonDB("planning", true, false);
+
+// db.push("/tasks", [], true);
+// db.push("/users", [], true);
+
 const path = require('path').dirname(require.main.filename);
 const file = path + '/tasks.json';
-const tasks = [];
+let tasks = [];
 let users = [];
-
-function addUser(id) {
-    const randonAvatar = Math.floor(Math.random() * 100);
-    const user = {
-        id: id,
-        avatar: `https://api.adorable.io/avatars/${randonAvatar}`
-    }
-    users.push(user);
-}
 
 io.on('connection', client => {
     console.log((new Date()) + ' new client connected!');
 
-    addUser(client.id);
-    io.emit('users', users);
     client.emit('tasks', tasks);
-
     client.on('tasks', (task) => {
         const index = tasks.findIndex(e => e.id === task.id);
         if (index !== undefined) {
             tasks[index] = task;
-            tasks.sort(a => {
-                if (a.status === 'todo') return 1;
-                else if (a.status === 'done') return -1;
-                else return 0;
-            });
-            jsonfile.writeFile(file, tasks, err => {
-                if (err) console.error(err)
-                else io.emit('tasks', tasks);
-            });
+            db.push(`/tasks[${index}]`, task, true);
+            io.emit('tasks', tasks);
         }
     });
 
-    client.on('add', task => {
-        if (task !== undefined) {
-            const len = tasks.length;
-            task.id = tasks[len - 1].id + 1;
-            tasks.push(task);
-            io.emit('tasks', task);
+    client.on('addTasks', (newTask) => {
+        console.log('add task', newTask.name);
+        if (newTask.label && newTask.label !== '') {
+            newTask.id = uuid();
+            db.push("/tasks[]", newTask, true);
+            tasks = db.getData('/tasks');
+            io.emit('tasks', tasks);
         }
     });
 
-    client.on('remove', task => {
-        if (task !== undefined) {
-            const index = tasks.findIndex(e => e.id === task.id);
-            if (index) {
-                task.splice(index, 1);
+    client.on('rmTasks', (task) => {
+        console.log('rm task', task.name);
+        if (task.id && task.id !== '') {
+            const storedTasks = db.getData('/tasks');
+            const idxMatch = storedTasks.findIndex(s => s.id === task.id);
+            if (idxMatch > -1) {
+                db.delete(`/tasks[${idxMatch}]`);
+                tasks = db.getData('/tasks');
                 io.emit('tasks', tasks);
             }
         }
     });
 
-    client.on('users', obj => {
-        console.log('a');
+    client.on('registerUser', user => {
+        console.log('register user', user.name, user.id);
+        if (user.name) {
+            const index = users.findIndex(u => u.id === user.id);
+            if (index < 0) { // put in session
+                user.connectionId = client.id;
+                users.push(user);
+            } else {
+                users[index] = user;
+            }
+            
+            const storedUsers = db.getData('/users');
+            const idxStored = storedUsers.findIndex(u => u.id === user.id && u.name === user.name);
+            if (idxStored) {
+                db.push(`/users[${idxStored}]`, user, true);
+            } else {
+                db.push("/users[]", user, true);
+            }
+
+            user.connectionId = client.id;
+        } else {
+            user.connectionId = client.id;
+            users.push(user);
+        }
+        io.emit('users', users);
     });
     client.on('disconnect', obj => {
         console.log('client disconnected', obj);
-        users = users.filter(u => u.id !== client.id);
+        users = users.filter(u => u.connectionId !== client.id);
         io.emit('users', users);
     });
-});
-
-jsonfile.readFile(file, (err, obj) => {
-    if (err) console.log(err, 'Not found task.json');
-    else {
-        tasks.push(...obj);
-        io.emit('tasks', tasks);
-    }
 });
 
 server.listen(3000, () => console.log('Server starting listen port 3000')); 
