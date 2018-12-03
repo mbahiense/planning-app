@@ -1,0 +1,22 @@
+<button mat-icon-button [matMenuTriggerFor]="menuOpt">
+  <mat-icon>more_vert</mat-icon>
+</button>
+
+<mat-menu #menuOpt="matMenu">
+  <button mat-menu-item (click)="assignToMe()" [disabled]="!(me$ | async).name">
+    <mat-icon>person_add</mat-icon>
+    <span>Assign to me</span>
+  </button>
+  <button mat-menu-item (click)="removeAssign()">
+    <mat-icon>person_add_disabled</mat-icon>
+    <span>Remove assign</span>
+  </button>
+  <button mat-menu-item (click)="edit()">
+    <mat-icon>edit</mat-icon>
+    <span>Edit</span>
+  </button>
+  <button mat-menu-item (click)="remove()">
+    <mat-icon>cancel</mat-icon>
+    <span>Remove</span>
+  </button>
+</mat-menu>

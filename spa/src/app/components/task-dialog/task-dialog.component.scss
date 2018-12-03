@@ -1,0 +1,10 @@
+:host {
+  ::ng-deep {
+    .mat-form-field {
+      width: 100%;
+    }
+    .mat-dialog-content {
+      overflow: initial !important;
+    }
+  }
+}

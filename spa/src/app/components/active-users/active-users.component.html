@@ -1,6 +1,11 @@
 <div class="cards">
-  <div *ngFor="let user of users" (click)="hideInput = !hideInput">
+  <!-- <div *ngFor="let user of users" (click)="hideInput = !hideInput"
+   [matTooltip]="user.name || 'anonymous'" matTooltipPosition="above">
     <img src={{user.avatar}} class="avatar card-image">
+  </div> -->
+  <app-avatar *ngFor="let user of users" [user]="user" (toggle)="hideInput = !hideInput" ></app-avatar>
+  <div class="settings">
+    <mat-icon (click)="hideInput = !hideInput">{{me?.name ? 'done': 'feedback'}}</mat-icon>
   </div>
 
   <div *ngIf="hideInput" class="form-name">

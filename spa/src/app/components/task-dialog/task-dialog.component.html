@@ -1,0 +1,31 @@
+<div>
+  <h2>{{ isEditionMode ? 'Edit Task' : 'Add Task' }}</h2>
+</div>
+<div mat-dialog-content>
+  <mat-form-field>
+    <input matInput [(ngModel)]="task.label" placeholder="Task name?" required />
+  </mat-form-field>
+  <mat-form-field>
+    <input matInput [(ngModel)]="task.module" placeholder="Task module?" />
+  </mat-form-field>
+  <mat-form-field>
+    <mat-select placeholder="Task status" [(ngModel)]="task.status">
+      <mat-option value="todo">To do</mat-option>
+      <mat-option value="doing">Doing</mat-option>
+      <mat-option value="done">Done</mat-option>
+    </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-select placeholder="Assign" [(ngModel)]="task.assign">
+        <mat-option value="">Nobody</mat-option>
+        <mat-option *ngFor="let user of users"  [value]="user">
+          {{user.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <div class="dialog-actions" mat-dialog-actions>
+      <button mat-raised-button (click)="cancel()" color="warn">Cancel</button>
+      <button mat-raised-button (click)="save()" color="primary">Save</button>
+    </div>
+  </div>

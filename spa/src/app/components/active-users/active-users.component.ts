@@ -1,7 +1,7 @@
+import { UserService } from './../../service/user.service';
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { SocketService } from '../../service/socket.service';
 import { User } from '../../model/model';
-import { Subscribable, Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-active-users',
@@ -14,18 +14,25 @@ export class ActiveUsersComponent implements OnInit, OnDestroy {
   username: string;
   usersSubs: Subscription;
   hideInput: boolean;
+  me: User;
 
-  constructor(private socketService: SocketService) { }
+  constructor(private userService: UserService) { }
 
   ngOnInit() {
-    this.usersSubs = this.socketService.onUsers().subscribe(users => {
+    this.usersSubs = this.userService.onUsers().subscribe(users => {
       this.users = users;
+    });
+    this.userService.me$.subscribe(me => {
+      this.me = me;
     });
   }
 
   updateName(): void {
-    console.log(this.username);
-    this.hideInput = true;
+    const selectUser: User = this.users.find(e => e.id === this.me.id);
+    selectUser.name = this.username;
+    this.hideInput = !this.hideInput;
+    this.me = selectUser;
+    this.userService.registerUser(selectUser);
   }
 
   ngOnDestroy(): void {
