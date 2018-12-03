@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { EventSocket } from './model/enums';
 import { Task } from './model/model';
-import {CdkDragDrop, moveItemInArray, transferArrayItem, CdkDragEnter} from '@angular/cdk/drag-drop';
+import { MatDialog } from '@angular/material';
+import { CdkDragDrop, moveItemInArray, transferArrayItem, CdkDragEnter } from '@angular/cdk/drag-drop';
 import { SocketService } from './service/socket.service';
+import { TaskDialogComponent } from './components/task-dialog/task-dialog.component';
 
 @Component({
   selector: 'app-root',
@@ -18,7 +20,8 @@ export class AppComponent implements OnInit {
   doing = [];
   done = [];
 
-  constructor(private socketService: SocketService) { }
+  constructor(private socketService: SocketService,
+              public dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.initSocket();
@@ -29,6 +32,7 @@ export class AppComponent implements OnInit {
 
     this.socket = this.socketService.onTasks()
       .subscribe((tasks: Task[]) => {
+        console.log('receive', tasks);
         this.tasks = tasks;
         this.todo = this.tasks.filter(task => task.status === 'todo');
         this.doing = this.tasks.filter(task => task.status === 'doing');
@@ -51,7 +55,7 @@ export class AppComponent implements OnInit {
     return this.tasks.filter(e => e.status === 'todo' || e.status === 'doing').length;
   }
 
-  drop(event: CdkDragDrop<Task[]>): void {
+  public drop(event: CdkDragDrop<Task[]>): void {
     if (event.previousContainer === event.container) {
       moveItemInArray(event.container.data, event.previousIndex, event.currentIndex);
     } else {
@@ -69,5 +73,33 @@ export class AppComponent implements OnInit {
         this.updateTask(task);
       }
     }
+  }
+
+  public addNewTask(): void {
+    const dialogRef = this.dialog.open(TaskDialogComponent, {
+      width: '350px',
+      data: {}
+    });
+
+    dialogRef.afterClosed().subscribe((task?: Task) => {
+      console.log('The dialog was closed', task);
+      if (task) {
+        this.socketService.addNewTask(task);
+      }
+    });
+  }
+
+public editTask(task: Task): void {
+  console.log('edit', task);
+  const dialogRef = this.dialog.open(TaskDialogComponent, {
+    width: '350px',
+    data: { task }
+  });
+
+    dialogRef.afterClosed().subscribe((task?: Task) => {
+      if (task) {
+        this.socketService.updateTask(task);
+      }
+    });
   }
 }

@@ -10,7 +10,7 @@ export class Task {
 }
 
 export class User {
-  id: number;
-  name: string;
+  id?: string;
+  name?: string;
   avatar: string;
 }

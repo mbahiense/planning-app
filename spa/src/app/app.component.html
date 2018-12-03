@@ -17,7 +17,11 @@
     (cdkDropListDropped)="drop($event)">
     <div class="task-box" *ngFor="let item of todo" cdkDrag>
         <div class="task-custom-placeholder" *cdkDragPlaceholder></div>
-        {{item.label}}
+        <div class="card-item">
+          <app-avatar *ngIf="item?.assign" [user]="item.assign"></app-avatar>
+            <label>{{item.label}}</label>
+        </div>
+        <app-task-options [task]="item" (editEvent)="editTask($event)"></app-task-options>
       </div>
   </div>
 </div>
@@ -34,7 +38,11 @@
       (cdkDropListDropped)="drop($event)">
       <div class="task-box" *ngFor="let item of doing" cdkDrag>
           <div class="task-custom-placeholder" *cdkDragPlaceholder></div>
-        {{item.label}}
+          <div class="card-item">
+              <app-avatar *ngIf="item?.assign" [user]="item.assign"></app-avatar>
+                <label>{{item.label}}</label>
+            </div>
+        <app-task-options [task]="item" (editEvent)="editTask($event)"></app-task-options>
       </div>
     </div>
   </div>
@@ -52,10 +60,19 @@
     (cdkDropListDropped)="drop($event)">
     <div class="task-box" *ngFor="let item of done" cdkDrag>
         <div class="task-custom-placeholder" *cdkDragPlaceholder></div>
-      {{item.label}}
+        <div class="card-item">
+            <app-avatar *ngIf="item?.assign" [user]="item.assign"></app-avatar>
+              <label>{{item.label}}</label>
+          </div>
+      <app-task-options [task]="item" (editEvent)="editTask($event)"></app-task-options>
     </div>
   </div>
 </div>
 </div>
 
+<div class="container-new-task">
+  <button mat-fab (click)="addNewTask()">
+    <mat-icon>add</mat-icon>
+  </button>
+</div>
 <label>Total to finish: {{getPendentTasks()}}</label>

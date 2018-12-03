@@ -1,18 +1,21 @@
 import { environment } from './../../environments/environment';
 import { Injectable } from '@angular/core';
 import * as socketIo from 'socket.io-client';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
+import { skip } from 'rxjs/operators';
 import { EventSocket } from '../model/enums';
-import { Task, User } from '../model/model';
+import { Task } from '../model/model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SocketService {
-
   private userId; number;
-  private socket;
+  private socket$: BehaviorSubject<any> = new BehaviorSubject(undefined);
 
+  get socket(): any {
+    return this.socket$.getValue();
+  }
   constructor() { }
 
   public initSocket(): void {
@@ -22,16 +25,21 @@ export class SocketService {
       'timeout': 10000,
       'transports': ['websocket']
     };
-    this.socket = socketIo(environment.api_url, conOptions);
+    this.socket$.next(socketIo(environment.api_url, conOptions));
   }
 
   public updateTask(task: Task): void {
     this.socket.emit('tasks', task);
   }
 
-  // public registerUser(user: User): void {
-  //   this.socket.emit('users', user);
-  // }
+  public addNewTask(task: Task): void {
+    this.socket.emit('addTasks', task);
+    // this.socket.emit('addTasks', { label: 'Somente test', module: 'Common', status: 'todo'});
+  }
+
+  public removeTask(task: Task): void {
+    this.socket.emit('rmTasks', task);
+  }
 
   public onTasks(): Observable<Task[]> {
     return new Observable<Task[]>(observer => {
@@ -39,15 +47,13 @@ export class SocketService {
     });
   }
 
-  public onUsers(): Observable<User[]> {
-    return new Observable<User[]>(observer => {
-      this.socket.on('users', (data: User[]) => observer.next(data));
-    });
-  }
-
   public onEvent(event: EventSocket): Observable<any> {
     return new Observable<EventSocket>(observer => {
       this.socket.on(event, () => observer.next());
     });
+  }
+
+  public getSocket(): Observable<any> {
+    return this.socket$.pipe(skip(1));
   }
 }
